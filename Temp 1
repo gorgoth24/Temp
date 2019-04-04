@@ -1,0 +1,40 @@
+// Removes an entry that contains substr
+Function GetObject(s: String; aList: TStringList): Variant;
+var
+	tempObject: TObject;
+	tempString: String;
+	debugMsg: Boolean;
+	i: Integer;
+begin
+// Begin debugMsg section
+	debugMsg := True;
+	
+	{Debug} if debugMsg then msg('[GetObject] GetObject( '+s+', aList );');
+	{Debug} if debugMsg then msgListObject('[GetObject] aList := ', aList, '');
+	if slContains(slGlobal, s) then begin
+		tempObject := aList.Objects[aList.IndexOf(s)];
+	end else begin
+		for i := 0 to aList.Count-1 do begin
+			if StrWithinStr(aList[i], s) then begin
+				Result := StrPosCopy(aList[i], '=', False);
+				{Debug} if debugMsg then msg('[GetObject] Result := '+Result);
+				Exit;
+			end;
+		end;
+	end;
+	if Assigned(tempObject) then begin
+		{Debug} if debugMsg then msg('[GetObject] varTypeAsText(tempObject) := '+varTypeAsText(tempObject));
+		if (varType(tempObject) = varInteger) then begin
+			Result := Integer(tempObject);
+			{Debug} if debugMsg then msg('[GetObject] Result := '+IntToStr(Result));
+		end else if (varType(tempObject) = varBoolean) then begin
+			Result := Boolean(tempObject);
+			{Debug} if debugMsg then msg('[GetObject] Result := '+BoolToStr(Result));
+		end else
+			Result := ObjectToElement(tempObject);
+		Exit;
+	end;
+	
+	debugMsg := False;
+// End debugMsg section
+end;
